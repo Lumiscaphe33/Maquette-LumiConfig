@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LumiConfig — Maquette Fonctionnelle (Spec Dev)</title>
+    <link rel="icon" type="image/png" href="logo-teal.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-deep: #002654;
+            --blue-lumis: #003D7A;
+            --cyan-accent: #00A8E1;
+            --teal: #2AABB3;
+            --dark-bg: #0A0E1A;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --bg-app: #f1f5f9;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --green: #10b981;
+            --green-light: #d1fae5;
+            --orange: #f59e0b;
+            --orange-light: #fef3c7;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+            --purple-light: #ede9fe;
+            --axf-gold: #b45309;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --mono: 'SF Mono', 'JetBrains Mono', 'Fira Code', Menlo, monospace;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font);
+            background: var(--bg-app);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+        }
+
+        /* ── TOP HEADER ── */
+        .top-header {
+            background: var(--blue-deep);
+            color: white;
+            padding: 12px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 16px;
+        }
+        .top-header-left { display: flex; align-items: center; gap: 12px; }
+        .top-header img { height: 28px; }
+        .top-header h1 { font-size: 16px; font-weight: 700; color: white; }
+        .top-header h1 span {
+            color: var(--cyan-accent);
+            font-weight: 400;
+            font-size: 12px;
+            background: rgba(0, 168, 225, 0.15);
+            padding: 2px 10px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+        .top-header-right { display: flex; align-items: center; gap: 10px; }
+        .top-header-badge {
+            font-size: 11px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            color: #cbd5e1;
+            letter-spacing: 0.5px;
+        }
+        .ttv-chrono {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(0, 168, 225, 0.15);
+            border: 1px solid rgba(0, 168, 225, 0.4);
+            color: var(--cyan-accent);
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-variant-numeric: tabular-nums;
+        }
+        .ttv-chrono::before {
+            content: '';
+            width: 8px; height: 8px;
+            background: var(--cyan-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--cyan-accent);
+            animation: pulse 1.6s ease-in-out infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 0.6 } 50% { opacity: 1 } }
+
+        /* ── INTRO BANNER ── */
+        .intro-banner {
+            background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue-lumis) 100%);
+            color: white;
+            padding: 40px 32px 36px;
+            text-align: center;
+        }
+        .intro-banner h2 { font-size: 26px; font-weight: 800; color: white; margin-bottom: 8px; }
+        .intro-banner p { color: #cbd5e1; font-size: 14px; max-width: 760px; margin: 0 auto 24px; line-height: 1.6; }
+        .intro-banner .audience-pills {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin-bottom: 24px;
+        }
+        .audience-pill {
+            font-size: 11px; font-weight: 600; letter-spacing: 0.6px; text-transform: uppercase;
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18);
+            color: #cbd5e1; padding: 5px 12px; border-radius: 14px;
+        }
+        .legend { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; color: #e2e8f0; }
+        .legend-dot { width: 11px; height: 11px; border-radius: 50%; }
+        .legend-dot.client { background: var(--cyan-accent); }
+        .legend-dot.auto { background: var(--green); }
+        .legend-dot.mixed { background: var(--orange); }
+
+        /* ── STEP NAVIGATION ── */
+        .step-nav {
+            display: flex;
+            gap: 4px;
+            padding: 0 32px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 56px;
+            z-index: 50;
+            overflow-x: auto;
+        }
+        .step-tab {
+            background: none; border: none; font-family: var(--font);
+            font-size: 13px; font-weight: 600;
+            padding: 14px 18px;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+            white-space: nowrap;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .step-tab:hover { color: var(--blue-lumis); background: #f8fafc; }
+        .step-tab.active {
+            color: var(--blue-deep);
+            border-bottom-color: var(--cyan-accent);
+        }
+        .step-tab .step-row { display: flex; align-items: center; gap: 8px; }
+        .step-tab .step-num {
+            background: var(--border);
+            color: var(--text-muted);
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .step-tab.active .step-num { background: var(--cyan-accent); color: white; }
+        .step-tab .step-mins { font-size: 10px; font-weight: 500; color: var(--text-light); letter-spacing: 0.4px; }
+        .step-tab.dashboard .step-num { background: var(--purple-light); color: var(--purple); }
+        .step-tab.dashboard.active .step-num { background: var(--purple); color: white; }
+        .step-tab.dashboard.active { border-bottom-color: var(--purple); color: var(--purple); }
+
+        /* ── STEP CONTENT ── */
+        .step-content { max-width: 1280px; margin: 0 auto; padding: 28px 32px 24px; }
+        .step-panel {
+            display: none;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+        }
+        .step-panel.active { display: block; }
+
+        .step-header { padding: 24px 32px; background: linear-gradient(180deg, #f8fafc, white); border-bottom: 1px solid var(--border); }
+        .step-header-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 6px; }
+        .step-header h3 { font-size: 20px; font-weight: 800; color: var(--blue-deep); }
+        .step-header p { font-size: 14px; color: var(--text-muted); line-height: 1.5; max-width: 800px; }
+        .step-header .phase-meta {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--text-light);
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        /* ── SPLIT VIEW ── */
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+        .split-client, .split-machine { padding: 28px; }
+        .split-client { border-right: 2px dashed var(--border); }
+        .split-label {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+            padding: 4px 12px; border-radius: 20px;
+            margin-bottom: 20px;
+        }
+        .split-label.client { background: rgba(0, 168, 225, 0.1); color: var(--cyan-accent); }
+        .split-label.machine { background: var(--green-light); color: #059669; }
+        .split-label::before { content: ''; width: 8px; height: 8px; border-radius: 50%; }
+        .split-label.client::before { background: var(--cyan-accent); }
+        .split-label.machine::before { background: var(--green); }
+
+        /* ── UI MOCKUP ELEMENTS ── */
+        .mock-card {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 14px;
+        }
+        .mock-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+        .mock-card h4 .step-tag {
+            font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+            background: var(--border); color: var(--text-muted);
+            padding: 2px 8px; border-radius: 10px;
+        }
+        .mock-input {
+            width: 100%;
+            padding: 9px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font);
+            font-size: 13px;
+            background: white;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .mock-input:focus { outline: none; border-color: var(--cyan-accent); box-shadow: 0 0 0 3px rgba(0, 168, 225, 0.1); }
+        .mock-input::placeholder { color: var(--text-light); }
+
+        .mock-btn {
+            padding: 9px 22px; border-radius: 8px;
+            font-family: var(--font); font-size: 13px; font-weight: 600;
+            border: none; cursor: pointer; transition: all 0.2s;
+        }
+        .mock-btn.primary { background: var(--blue-lumis); color: white; }
+        .mock-btn.primary:hover { background: var(--cyan-accent); }
+        .mock-btn.secondary { background: white; color: var(--text-main); border: 1px solid var(--border); }
+        .mock-btn.green { background: var(--green); color: white; }
+        .mock-btn-row { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+
+        .mock-select {
+            width: 100%; padding: 9px 12px;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-family: var(--font); font-size: 13px;
+            background: white; color: var(--text-main);
+            margin-bottom: 8px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2364748b' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+        }
+
+        /* ── MACHINE LOG ── */
+        .machine-log {
+            background: #0f172a;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+            font-family: var(--mono);
+            font-size: 11.5px;
+            line-height: 1.75;
+            color: #94a3b8;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        .machine-log .log-ok { color: var(--green); }
+        .machine-log .log-info { color: var(--cyan-accent); }
+        .machine-log .log-warn { color: var(--orange); }
+        .machine-log .log-err { color: var(--red); }
+        .machine-log .log-label { color: #475569; }
+        .machine-log .log-meta { color: #cbd5e1; }
+        .machine-log code { color: #e2e8f0; }
+
+        .machine-step {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .machine-step:last-child { border-bottom: none; }
+        .machine-step-icon {
+            width: 30px; height: 30px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+        .machine-step-icon.green { background: var(--green-light); }
+        .machine-step-icon.orange { background: var(--orange-light); }
+        .machine-step-icon.purple { background: var(--purple-light); }
+        .machine-step-icon.cyan { background: rgba(0,168,225,0.12); }
+        .machine-step-text h5 { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 3px; }
+        .machine-step-text p { font-size: 12px; color: var(--text-muted); line-height: 1.55; }
+        .machine-step-text code { font-family: var(--mono); font-size: 11px; background: #f1f5f9; padding: 1px 5px; border-radius: 4px; color: var(--blue-lumis); }
+
+        /* ── DROP ZONE ── */
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            padding: 36px 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 14px;
+            background: white;
+        }
+        .drop-zone:hover { border-color: var(--cyan-accent); background: rgba(0, 168, 225, 0.03); }
+        .drop-zone-icon { font-size: 32px; margin-bottom: 8px; }
+        .drop-zone h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .drop-zone p { font-size: 12px; color: var(--text-muted); }
+
+        /* ── FORMAT CHIPS ── */
+        .format-chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; justify-content: center; }
+        .format-chip {
+            font-family: var(--mono); font-size: 10px; font-weight: 600;
+            background: #f1f5f9; color: var(--text-muted);
+            padding: 3px 8px; border-radius: 4px;
+            border: 1px solid var(--border);
+        }
+        .format-chip.native { background: rgba(0,168,225,0.08); color: var(--cyan-accent); border-color: rgba(0,168,225,0.25); }
+
+        /* ── PROFILAGE CARDS ── */
+        .profile-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 8px; margin-bottom: 8px; }
+        .profile-card {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer; transition: all 0.2s;
+            background: white;
+        }
+        .profile-card:hover { border-color: var(--cyan-accent); transform: translateY(-2px); }
+        .profile-card.selected { border-color: var(--cyan-accent); background: rgba(0,168,225,0.05); box-shadow: 0 4px 12px rgba(0,168,225,0.12); }
+        .profile-card-icon { font-size: 22px; margin-bottom: 4px; }
+        .profile-card-name { font-size: 11px; font-weight: 700; color: var(--text-main); line-height: 1.2; }
+        .profile-card-sub { font-size: 10px; color: var(--text-muted); }
+
+        /* ── ROI CALCULATOR ── */
+        .roi-calc { background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%); border: 1px solid #fdba74; }
+        .roi-calc h4 { color: #9a3412; }
+        .roi-calc .roi-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .roi-calc .roi-input-block label { display: block; font-size: 10px; font-weight: 700; color: #9a3412; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.6px; }
+        .roi-calc .mock-input { background: white; border-color: #fdba74; font-weight: 600; }
+        .roi-result {
+            margin-top: 14px; padding: 16px;
+            background: white; border: 2px solid #fb923c;
+            border-radius: 10px; text-align: center;
+        }
+        .roi-result .roi-eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: #9a3412; text-transform: uppercase; margin-bottom: 4px; }
+        .roi-result .roi-amount { font-size: 32px; font-weight: 900; color: #ea580c; font-variant-numeric: tabular-nums; line-height: 1; margin: 4px 0; }
+        .roi-result .roi-note { font-size: 11px; color: var(--text-muted); }
+
+        /* ── AxF & MATERIALS ── */
+        .axf-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 9px; font-weight: 800; letter-spacing: 0.6px;
+            background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 2px 6px; border-radius: 4px;
+            border: 1px solid #d97706;
+            text-transform: uppercase;
+        }
+        .axf-material-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+            margin-top: 8px;
+        }
+        .axf-mat {
+            background: white; border: 1px solid var(--border); border-radius: 8px;
+            padding: 6px; text-align: center; cursor: grab;
+        }
+        .axf-mat:hover { border-color: var(--cyan-accent); transform: translateY(-1px); }
+        .axf-mat-swatch {
+            width: 100%; aspect-ratio: 1; border-radius: 6px; margin-bottom: 4px;
+            background-size: 200% 200%;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.1);
+        }
+        .axf-mat-name { font-size: 10px; font-weight: 600; color: var(--text-main); line-height: 1.2; }
+        .axf-mat-meta { font-size: 9px; color: var(--text-light); font-family: var(--mono); }
+
+        /* ── PBR SEMANTIC SLIDERS ── */
+        .pbr-block { display: flex; flex-direction: column; gap: 10px; }
+        .pbr-slider {
+            display: grid; grid-template-columns: 90px 1fr 36px; align-items: center; gap: 10px;
+        }
+        .pbr-slider label { font-size: 12px; font-weight: 600; color: var(--text-main); }
+        .pbr-track {
+            position: relative;
+            height: 6px;
+            background: linear-gradient(90deg, #cbd5e1 0%, var(--cyan-accent) 100%);
+            border-radius: 3px;
+        }
+        .pbr-thumb {
+            position: absolute;
+            top: 50%; transform: translate(-50%, -50%);
+            width: 16px; height: 16px;
+            background: white;
+            border: 2px solid var(--cyan-accent);
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,168,225,0.3);
+        }
+        .pbr-value { font-family: var(--mono); font-size: 11px; color: var(--text-muted); text-align: right; }
+
+        /* ── OPTION BUILDER ── */
+        .option-group {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+        .option-group-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .option-group-header h5 { font-size: 13px; font-weight: 700; }
+        .option-group-header .param-key { font-family: var(--mono); font-size: 10px; color: var(--cyan-accent); }
+        .option-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 4px 9px; border-radius: 6px;
+            font-size: 11px; font-weight: 600;
+            margin-right: 5px; margin-bottom: 5px;
+        }
+        .option-tag.red { background: #fee2e2; color: #b91c1c; }
+        .option-tag.blue { background: #dbeafe; color: #1e40af; }
+        .option-tag.black { background: #1e293b; color: white; }
+        .option-tag.chrome { background: #e2e8f0; color: #475569; }
+        .option-tag.gold { background: #fef3c7; color: #92400e; }
+        .config-string-preview {
+            background: #0f172a; color: #cbd5e1;
+            font-family: var(--mono); font-size: 11px;
+            padding: 8px 12px; border-radius: 6px;
+            overflow-x: auto; white-space: nowrap;
+        }
+        .config-string-preview .key { color: var(--cyan-accent); }
+        .config-string-preview .val { color: #fde68a; }
+        .config-string-preview .sep { color: #64748b; }
+
+        /* ── VIEWER PLACEHOLDER ── */
+        .viewer-placeholder {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #cbd5e1;
+            border-radius: 10px;
+            padding: 22px 16px;
+            text-align: center;
+            font-size: 12px;
+            font-family: var(--mono);
+            display: flex; flex-direction: column; align-items: center; gap: 8px;
+        }
+        .viewer-placeholder .viewer-mock-svg {
+            width: 100%; max-width: 240px; height: 80px;
+            background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; color: #64748b;
+        }
+
+        /* ── BRANDING PREVIEW ── */
+        .brand-preview { background: white; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .brand-preview-header { background: var(--blue-deep); padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+        .brand-preview-header .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+        .brand-preview-body { padding: 18px; text-align: center; }
+        .brand-config-btns { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+        .brand-config-btn { width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--border); cursor: pointer; }
+
+        /* ── PUBLISH OUTPUTS ── */
+        .publish-output {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            margin-bottom: 8px;
+        }
+        .publish-output-icon {
+            width: 36px; height: 36px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; flex-shrink: 0;
+        }
+        .publish-output-text { flex: 1; min-width: 0; }
+        .publish-output-text h5 { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+        .publish-output-text p { font-size: 10.5px; color: var(--text-muted); }
+        .publish-output-code {
+            font-family: var(--mono); font-size: 11px;
+            color: var(--cyan-accent); background: #f1f5f9;
+            padding: 2px 7px; border-radius: 4px;
+            display: inline-block;
+            word-break: break-all;
+        }
+
+        /* ── STAT CARDS ── */
+        .stat-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            margin-bottom: 14px;
+        }
+        .stat-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            position: relative;
+        }
+        .stat-card.highlight { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-color: #f59e0b; }
+        .stat-card.highlight .stat-val { color: #92400e; }
+        .stat-val { font-size: 24px; font-weight: 800; color: var(--blue-deep); line-height: 1; font-variant-numeric: tabular-nums; }
+        .stat-label { font-size: 10.5px; color: var(--text-muted); font-weight: 500; margin-top: 4px; }
+        .stat-delta { font-size: 10px; color: var(--green); font-weight: 600; margin-top: 2px; }
+        .stat-delta.down { color: var(--red); }
+
+        /* ── PROGRESS BAR ── */
+        .progress-bar { height: 6px; background: var(--border); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .progress-bar-fill.blue { background: var(--cyan-accent); }
+        .progress-bar-fill.green { background: var(--green); }
+        .progress-bar-fill.orange { background: var(--orange); }
+
+        /* ── EGRESS METER ── */
+        .egress-meter {
+            background: #f8fafc; border: 1px solid var(--border);
+            border-radius: 10px; padding: 12px;
+        }
+        .egress-meter-header { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+        .egress-meter-header .egress-val { font-family: var(--mono); color: var(--text-main); }
+        .egress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .egress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green) 0%, var(--orange) 80%, var(--red) 100%); }
+        .egress-note { font-size: 10.5px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+
+        /* ── COLOR PICKER ROW ── */
+        .color-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+        .color-row label { font-size: 12px; font-weight: 600; width: 100px; color: var(--text-muted); }
+        .color-swatch { width: 26px; height: 26px; border-radius: 6px; border: 2px solid var(--border); cursor: pointer; }
+        .color-hex { font-family: var(--mono); font-size: 12px; color: var(--text-muted); }
+
+        /* ── TEMPLATE GRID ── */
+        .template-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .template-card {
+            border: 2px solid var(--border); border-radius: 10px;
+            padding: 8px; text-align: center; cursor: pointer; transition: all 0.2s;
+        }
+        .template-card:hover { border-color: var(--cyan-accent); }
+        .template-card.selected { border-color: var(--cyan-accent); background: rgba(0,168,225,0.04); }
+        .template-card .t-preview { height: 44px; border-radius: 6px; margin-bottom: 6px; }
+        .template-card .t-name { font-size: 10.5px; font-weight: 600; }
+        .template-card .t-sub { font-size: 9px; color: var(--text-light); font-family: var(--mono); }
+
+        /* ── TECH STACK BOX ── */
+        .tech-stack-box {
+            max-width: 1280px; margin: 28px auto;
+            background: #0f172a; color: #e2e8f0;
+            border-radius: 16px; padding: 28px 32px;
+        }
+        .tech-stack-box h3 { color: white; font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+        .tech-stack-box > p { color: #94a3b8; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+        .tech-stack-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .tech-stack-col h5 {
+            font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+            color: var(--cyan-accent); text-transform: uppercase;
+            margin-bottom: 10px; padding-bottom: 6px;
+            border-bottom: 1px solid #334155;
+        }
+        .tech-stack-col ul { list-style: none; }
+        .tech-stack-col li {
+            font-family: var(--mono); font-size: 11.5px; line-height: 1.9;
+            color: #cbd5e1;
+        }
+        .tech-stack-col li strong { color: white; font-weight: 600; }
+        .tech-stack-col li .tag {
+            display: inline-block; font-size: 9px; font-weight: 700;
+            background: rgba(0,168,225,0.15); color: var(--cyan-accent);
+            padding: 1px 6px; border-radius: 4px; margin-left: 4px;
+            font-family: var(--font); letter-spacing: 0.4px;
+        }
+        .tech-stack-col li .tag.risk { background: rgba(239,68,68,0.15); color: #fca5a5; }
+        .tech-stack-col li .tag.ok { background: rgba(16,185,129,0.15); color: #6ee7b7; }
+
+        /* ── OPEN QUESTIONS ── */
+        .open-questions {
+            max-width: 1280px; margin: 0 auto 28px;
+            background: white; border: 1px solid var(--border);
+            border-radius: 16px; padding: 28px 32px;
+        }
+        .open-questions h3 { font-size: 17px; font-weight: 700; color: var(--blue-deep); margin-bottom: 4px; }
+        .open-questions > p { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+        .question-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .question-card {
+            background: #fef3c7; border: 1px solid #f59e0b; border-radius: 10px;
+            padding: 12px 14px;
+        }
+        .question-card .q-num {
+            font-size: 10px; font-weight: 700; letter-spacing: 1px;
+            color: #92400e; text-transform: uppercase;
+        }
+        .question-card .q-text { font-size: 13px; font-weight: 600; color: var(--text-main); margin: 4px 0 6px; }
+        .question-card .q-impact { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+        .question-card .q-impact strong { color: var(--red); font-weight: 700; }
+
+        /* ── FOOTER ── */
+        .mockup-footer { text-align: center; padding: 28px; color: var(--text-light); font-size: 12px; }
+        .mockup-footer a { color: var(--cyan-accent); text-decoration: none; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1100px) {
+            .stat-grid { grid-template-columns: 1fr 1fr; }
+            .tech-stack-grid { grid-template-columns: 1fr; }
+            .question-list { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .split-view { grid-template-columns: 1fr; }
+            .split-client { border-right: none; border-bottom: 2px dashed var(--border); }
+            .step-nav { gap: 2px; padding: 0 12px; }
+            .step-tab { font-size: 11px; padding: 10px 10px; }
+            .step-tab .step-mins { display: none; }
+            .profile-cards { grid-template-columns: 1fr 1fr; }
+            .axf-material-grid { grid-template-columns: 1fr 1fr 1fr; }
+            .template-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── TOP HEADER ── -->
+    <header class="top-header">
+        <div class="top-header-left">
+            <img src="logo-teal.png" alt="LumiConfig">
+            <h1>LumiConfig<span>Maquette · Spec dev</span></h1>
+        </div>
+        <div class="top-header-right">
+            <span class="ttv-chrono" id="ttv-chrono">Promesse TTV : 15 min</span>
+            <span class="top-header-badge">P3D Headless · WebRender v2 · @lumiscaphe/viewer</span>
+        </div>
+    </header>
+
+    <!-- ── INTRO BANNER ── -->
+    <div class="intro-banner">
+        <h2>Parcours Utilisateur LumiConfig — Spec Faisabilité</h2>
+        <p>
+            Maquette technique destinée à <strong>l'équipe dev Lumiscaphe</strong> et aux <strong>utilisateurs P3D historiques</strong> pour évaluer la faisabilité d'un pure player SaaS bâti sur Patchwork 3D Headless et l'API WebRender. Côté client : l'UX du marketing manager non-technicien. Côté machine : les appels API et stages algorithmiques réels.
+        </p>
+        <div class="audience-pills">
+            <span class="audience-pill">Pour Dev backend</span>
+            <span class="audience-pill">Pour Utilisateurs P3D</span>
+            <span class="audience-pill">Pour CTO</span>
+            <span class="audience-pill">Pour Product owner</span>
+        </div>
+        <div class="legend">
+            <div class="legend-item"><span class="legend-dot client"></span> UI client (Marketing manager)</div>
+            <div class="legend-item"><span class="legend-dot auto"></span> Pipeline serveur 100% automatisé</div>
+            <div class="legend-item"<span class="legend-dot mixed"></span> Action utilisateur ou point bloquant à valider</div>
+        </div>
+    </div>
+
+    <!-- ── STEP NAVIGATION (4 phases + Dashboard) ── -->
+    <div class="step-nav">
+        <button class="step-tab active" onclick="showStep(1)">
+            <div class="step-row"><span class="step-num">1</span>Inscription &amp; Profilage</div>
+            <span class="step-mins">0–2 min</span>
+        </button>
+        <button class="step-tab" onclick="showStep(2)">
+            <div class="step-row"><span class="step-num">2</span>Ingestion CAO</div>
+            <span class="step-mins">2–5 min</span>
+        </button>
+        <button class="step-tab" onclick="showStep(3)">
+            <div class="step-row"><span class="step-num">3</span>Atelier sémantique</div>
+            <span class="step-mins">5–12 min</span>
+        </button>
+        <button class="step-tab" onclick="showStep(4)">
+            <div class="step-row"><span class="step-num">4</span>Aha! &amp; Déploiement</div>
+            <span class="step-mins">12–15 min</span>
+        </button>
+        <button class="step-tab dashboard" onclick="showStep(5)">
+            <div class="step-row"><span class="step-num">★</span>Dashboard</div>
+            <span class="step-mins">post-onboarding</span>
+        </button>
+    </div>
+
+    <!-- ── STEP PANELS ── -->
+    <div class="step-content">
+
+        <!-- ═══════════════════════════════════════════════════════════
+             PHASE 1 — INSCRIPTION & PROFILAGE
+             ══════════════════════════════════════════════════════════ -->
+        <div class="step-panel active" id="step-1">
+            <div class="step-header">
+                <div class="step-header-top">
+                    <h3>Phase 1 — Inscription &amp; Profilage Contextuel</h3>
+                    <span class="phase-meta">TTV cumulé : 00:00 → 02:00</span>
+                </div>
+                <p>L'utilisateur crée son compte sans carte bancaire, répond à 3 questions intelligentes, et un calculateur ROI ancre la valeur en euros avant qu'il ne touche au produit. Le serveur pré-filtre la bibliothèque HDRi et AxF selon le secteur déclaré.</p>
+            </div>
+            <div class="split-view">
+                <div class="split-client">
+                    <div class="split-label client">Ce que le client voit</div>
+
+                    <!-- 1.1 Signup minimal -->
+                    <div class="mock-card">
+                        <h4>Créer un compte LumiConfig <span class="step-tag">1/3</span></h4>
+                        <input class="mock-input" type="email" placeholder="Email professionnel" value="alex@aménageurs-vdl.fr">
+                        <input class="mock-input" type="password" placeholder="Mot de passe">
+                        <div class="mock-btn-row">
+                            <button class="mock-btn primary">Créer mon compte</button>
+                            <button class="mock-btn secondary">Connexion Google SSO</button>
+                        </div>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">Aucune carte bancaire. Essai 14 jours. Plan Free dispo à vie (avec watermark).</p>
+                    </div>
+
+                    <!-- 1.2 Profilage 3 questions -->
+                    <div class="mock-card" style="border-color: var(--cyan-accent); background: rgba(0,168,225,0.04);">
+                        <h4>Personnalisons votre espace <span class="step-tag">2/3</span></h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">3 questions rapides pour pré-filtrer les matériaux et environnements adaptés à votre métier.</p>
+
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">Votre rôle</label>
+                        <div class="profile-cards">
+                            <div class="profile-card"><div class="profile-card-icon">📈</div><div class="profile-card-name">Marketing</div></div>
+                            <div class="profile-card selected"><div class="profile-card-icon">🛠️</div><div class="profile-card-name">Direction commerciale</div></div>
+                            <div class="profile-card"><div class="profile-card-icon">🔬</div><div class="profile-card-name">R&amp;D / Innovation</div></div>
+                        </div>
+
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-top: 10px;">Votre secteur</label>
+                        <div class="profile-cards">
+                            <div class="profile-card selected"><div class="profile-card-icon">🚐</div><div class="profile-card-name">VDL / Camping-car</div></div>
+                            <div class="profile-card"><div class="profile-card-icon">💎</div><div class="profile-card-name">Packaging cosmétique</div></div>
+                            <div class="profile-card"><div class="profile-card-icon">🛋️</div><div class="profile-card-name">Mobilier / Design</div></div>
+                        </div>
+
+                        <label style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-top: 10px;">Objectif immédiat</label>
+                        <div class="profile-cards">
+                            <div class="profile-card selected"><div class="profile-card-icon">🛒</div><div class="profile-card-name">Vendre + d'options</div></div>
+                            <div class="profile-card"><div class="profile-card-icon">📑</div><div class="profile-card-name">Remplacer catalogue</div></div>
+                            <div class="profile-card"><div class="profile-card-icon">🧪</div><div class="profile-card-name">Réduire prototypes</div></div>
+                        </div>
+
+                        <p style="font-size: 11px; color: var(--green); margin-top: 12px;">✓ <strong>187 matériaux AxF</strong> et <strong>12 environnements HDRi</strong> présélectionnés pour le VDL.</p>
+                    </div>
+
+                    <!-- 1.3 ROI calculator -->
+                    <div class="mock-card roi-calc">
+                        <h4>Combien perdez-vous chaque mois ? <span class="step-tag">3/3</span></h4>
+                        <p style="font-size: 12px; color: #9a3412; margin-bottom: 10px;">Ancrage de valeur avant la première démo. <em>Personne ne paie 585 €/mois sans voir le retour.</em></p>
+                        <div class="roi-inputs">
+                            <div class="roi-input-block">
+                                <label>Véhicules vendus / mois</label>
+                                <input class="mock-input" type="number" value="35">
+                            </div>
+                            <div class="roi-input-block">
+                                <label>€ d'options perdues / véh.</label>
+                                <input class="mock-input" type="number" value="1500">
+                            </div>
+                        </div>
+                        <div class="roi-result">
+                            <div class="roi-eyebrow">Manque à gagner estimé</div>
+                            <div class="roi-amount">52 500 € / mois</div>
+                            <div class="roi-note">Source : étude VDL 2026 — 1 500 € d'upsell perdus par véhicule par incapacité du client à projeter les options.</div>
+                        </div>
+                        <button class="mock-btn primary" style="width: 100%; margin-top: 12px;">Récupérer ce manque à gagner →</button>
+                    </div>
+                </div>
+
+                <div class="split-machine">
+                    <div class="split-label machine">Ce que la machine fait</div>
+
+                    <div class="machine-log">
+<span class="log-info">[AUTH]</span> POST /api/auth/signup → JWT issued (24h)<br>
+<span class="log-ok">✓</span> User: <code>alex@aménageurs-vdl.fr</code> · plan=trial · workspace_id=ws_a8f12c<br>
+<span class="log-info">[PROFILE]</span> PUT /api/profile → role=sales, sector=vdl, goal=upsell<br>
+<span class="log-info">[LIBRARY]</span> Filtering material catalog by sector tag...<br>
+<span class="log-label">├─</span> AxF library (4 218 entries) filtered → <span class="log-ok">187 VDL-relevant</span><br>
+<span class="log-label">├─</span> HDRi env-maps (54 entries) filtered → <span class="log-ok">12 (Studio, Showroom auto, Outdoor)</span><br>
+<span class="log-label">└─</span> Sector verre/cristal lourd → unloaded from session cache<br>
+<span class="log-info">[ROI]</span> POST /api/roi/calc → input 35×1500 → output 52 500€/mo<br>
+<span class="log-ok">✓</span> ROI snapshot saved in CRM for sales follow-up<br>
+<span class="log-info">[ONBOARD]</span> Email seq triggered (J+0, J+2, J+7, J+13)<br>
+<span class="log-info">[CRM]</span> Lead enriched via Clearbit → <code>SIRET, ARR, headcount=85, signal=Digital-Native</code><br>
+<span class="log-ok">✓</span> Lead score: <span class="log-ok">62/100</span> (cycle vente estimé : 30-60j)
+                    </div>
+
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">🔐</div>
+                        <div class="machine-step-text">
+                            <h5>Provisioning JWT + workspace</h5>
+                            <p>JWT 24h + refresh token. Workspace isolé en multi-tenant (schéma <code>ws_xxxx</code> Postgres). Quota Trial : 5 Go S3 / 20 K vues / mois.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon cyan">🎯</div>
+                        <div class="machine-step-text">
+                            <h5>Routage sectoriel (filtrage AxF + HDRi)</h5>
+                            <p>Le profilage est <strong>la décision UX clé</strong> du rapport stratégique. Bibliothèque filtrée à chaque session via tag <code>sector</code>. Évite la fatigue décisionnelle (4 218 → 187 matériaux pertinents).</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon orange">💰</div>
+                        <div class="machine-step-text">
+                            <h5>ROI snapshot + Lead scoring CRM</h5>
+                            <p>Le calcul ROI est persisté pour la séquence email + scoring lead. Tag <code>Digital-Native</code> = priorité commerciale (cycle court 30-60j vs 6-12 mois mega-groupes).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             PHASE 2 — INGESTION CAO
+             ══════════════════════════════════════════════════════════ -->
+        <div class="step-panel" id="step-2">
+            <div class="step-header">
+                <div class="step-header-top">
+                    <h3>Phase 2 — Ingestion CAO (Pipeline Headless invisible)</h3>
+                    <span class="phase-meta">TTV cumulé : 02:00 → 05:00</span>
+                </div>
+                <p>Drop d'un assemblage industriel brut. Le pipeline cloud exécute les <strong>5 étapes algorithmiques</strong> identifiées par le rapport d'audit (tessellation → décimation → cleanup → LOD → UV unwrap) en mode 100% automatisé sur Patchwork 3D Headless.</p>
+            </div>
+            <div class="split-view">
+                <div class="split-client">
+                    <div class="split-label client">Ce que le client voit</div>
+
+                    <div class="mock-card">
+                        <h4>Nouveau projet</h4>
+                        <input class="mock-input" type="text" placeholder="Nom du projet" value="Trafic L2H2 — Aménagement 2026">
+                        <p style="font-size: 11px; color: var(--text-muted);">Le secteur (VDL) et le rôle sont déjà connus depuis le profilage.</p>
+                    </div>
+
+                    <div class="drop-zone">
+                        <div class="drop-zone-icon">📦</div>
+                        <h4>Glissez votre assemblage CAO</h4>
+                        <p>Taille max : 2 Go · Pas de nettoyage requis</p>
+                        <div class="format-chips">
+                            <span class="format-chip native">STEP AP214/242</span>
+                            <span class="format-chip native">CATIA V5/V6</span>
+                            <span class="format-chip native">SolidWorks ≤ 2026</span>
+                            <span class="format-chip native">JT 10.x</span>
+                            <span class="format-chip">IGES</span>
+                            <span class="format-chip">NX</span>
+                            <span class="format-chip">Parasolid (x_t)</span>
+                            <span class="format-chip">glTF 2.0</span>
+                            <span class="format-chip">FBX / OBJ</span>
+                        </div>
+                    </div>
+
+                    <div class="mock-card" style="border-color: var(--cyan-accent);">
+                        <h4>⏳ Pipeline en cours… <span class="step-tag">3/5</span></h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"><code style="font-family: var(--mono); font-size: 11px;">trafic_assembly.STEP</code> — 487 Mo · Format STEP AP242</p>
+                        <div class="progress-bar"><div class="progress-bar-fill blue" style="width: 58%;"></div></div>
+                        <p style="font-size: 11px; color: var(--text-light); font-family: var(--mono);">[3/5] Décimation maillage — 1 m 12 s restantes</p>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-top: 8px;">⏱ Temps estimé total : 3 m 40 s · <em>Vous pouvez quitter cet onglet, on vous notifie par mail.</em></p>
+                    </div>
+
+                    <div class="mock-card" style="border-color: var(--green); background: rgba(16, 185, 129, 0.03);">
+                        <h4 style="color: var(--green);">✓ Ingestion réussie</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 8px;"><strong>847 pièces</strong> · 4.7M triangles bruts → <strong>680K (LOD0)</strong> · 23 groupes logiques détectés · 12 indices matériaux</p>
+                        <div class="viewer-placeholder">
+                            <div class="viewer-mock-svg">[ viewer @lumiscaphe/viewer · mode='image' · bookmark='Default/Init' ]</div>
+                            <span>Première visualisation WebRender · <code style="color: var(--cyan-accent);">databaseId: db_a8f12c3d</code></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-machine">
+                    <div class="split-label machine">Ce que la machine fait</div>
+
+                    <div class="machine-log">
+<span class="log-info">[UPLOAD]</span> S3 multipart, 10 MB chunks → <code>s3://lumi-uploads/ws_a8f12c/</code><br>
+<span class="log-ok">✓</span> Checksum SHA-256 validé · 487 MB en 42 s<br>
+<span class="log-info">[PIPELINE]</span> Spawn Fargate container · ARM Graviton2 · 4 vCPU / 16 Go<br>
+<span class="log-info">[P3D-HL]</span> Patchwork 3D Headless v6.4.2 démarré (CLI headless mode)<br>
+<span class="log-label">├─</span> <span class="log-meta">[1/5 TESS]</span> B-Rep → triangular mesh (chord tol. 0.05mm) · 4 718 240 tri<br>
+<span class="log-label">├─</span> <span class="log-meta">[2/5 DECIM]</span> Quadric edge collapse · target ratio 0.15 · sharp edges preserved<br>
+<span class="log-label">├─</span> <span class="log-meta">[3/5 CLEAN]</span> Welding 0.01mm · 12 480 degenerate tri removed · normals recomputed<br>
+<span class="log-label">├─</span> <span class="log-meta">[4/5 LOD]</span> 3 levels generated (LOD0=680K · LOD1=120K · LOD2=18K)<br>
+<span class="log-label">└─</span> <span class="log-meta">[5/5 UV]</span> Tri-planar auto-projection · 847 parts UV-mapped<br>
+<span class="log-ok">✓</span> Pipeline terminé en 3 m 38 s · 4.7M → 680K tri (-85.5%)<br>
+<span class="log-info">[TREE]</span> Product tree reconstructed · 23 logical groups<br>
+<span class="log-info">[META]</span> Name-regex hints: <code>Chrome_*, Glass_*, Rubber_*, Paint_*</code> → 12 matches<br>
+<span class="log-info">[WR]</span> POST /publish → <code>databaseId: db_a8f12c3d</code><br>
+<span class="log-ok">✓</span> Scène disponible : <code>https://wr-lumis3d.lumiscaphe.com/Database?databaseId=db_a8f12c3d</code><br>
+<span class="log-warn">⚠</span> 3 surfaces non-manifold détectées → repair manuel proposé (étape 3)
+                    </div>
+
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">🏗️</div>
+                        <div class="machine-step-text">
+                            <h5>Patchwork 3D Headless sur Fargate (Graviton2)</h5>
+                            <p>Conteneur ARM 4 vCPU / 16 Go selon recommandation rapport audit (Lambda 15min/10GB insuffisant). Coût compute ≈ <code>0,10 $</code> par ingestion. <strong>P3D doit exposer un mode CLI headless</strong> — à confirmer avec l'équipe core.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">⚙️</div>
+                        <div class="machine-step-text">
+                            <h5>5 stages algorithmiques (rapport audit)</h5>
+                            <p>Tessellation · Décimation (quadric edge collapse) · Cleanup (welding, normals) · LOD ×3 · UV tri-planar. <strong>L'UV unwrap auto est l'étape la plus risquée</strong> — sur des surfaces complexes, prévoir fallback InstaLOD SDK.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon orange">🪤</div>
+                        <div class="machine-step-text">
+                            <h5>Fallback InstaLOD / CAD Exchanger</h5>
+                            <p>Si P3D échoue (assemblage &gt; 5M poly, non-manifold sévère, BRep corrompu) → bascule vers <code>InstaLOD SDK</code> (~165 $/poste/mois × poste pipeline) ou <code>CAD Exchanger Server SDK</code> (~2 690 $ + volume). Décision Build vs Buy à arbitrer.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon cyan">🌐</div>
+                        <div class="machine-step-text">
+                            <h5>Publication WebRender</h5>
+                            <p>Résultat publié sur l'API WebRender existante. <code>databaseId</code> retourné. Le viewer <code>@lumiscaphe/viewer</code> charge la scène en <code>mode: 'image'</code> avec un bookmark par défaut.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             PHASE 3 — ATELIER SÉMANTIQUE
+             ══════════════════════════════════════════════════════════ -->
+        <div class="step-panel" id="step-3">
+            <div class="step-header">
+                <div class="step-header-top">
+                    <h3>Phase 3 — Atelier sémantique (HDRi · AxF · Sliders PBR · Options)</h3>
+                    <span class="phase-meta">TTV cumulé : 05:00 → 12:00</span>
+                </div>
+                <p>Le cœur du produit. Le marketing manager applique matériaux <strong>AxF photoréalistes</strong> par drag &amp; drop, ajuste l'apparence via <strong>sliders sémantiques</strong> (jamais d'éditeur nodal), définit les options du configurateur, et le système génère les chaînes de configuration <code>Param.Valeur</code> + règles de partition WebRender.</p>
+            </div>
+            <div class="split-view">
+                <div class="split-client">
+                    <div class="split-label client">Ce que le client voit</div>
+
+                    <!-- 3.1 Environnement HDRi -->
+                    <div class="mock-card">
+                        <h4>Environnement HDRi <span class="step-tag">Filtré secteur VDL</span></h4>
+                        <div class="template-grid">
+                            <div class="template-card selected">
+                                <div class="t-preview" style="background: linear-gradient(180deg, #ffffff 0%, #e2e8f0 100%);"></div>
+                                <div class="t-name">Studio Blanc</div>
+                                <div class="t-sub">8K HDR · 32-bit EXR</div>
+                            </div>
+                            <div class="template-card">
+                                <div class="t-preview" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);"></div>
+                                <div class="t-name">Showroom Auto</div>
+                                <div class="t-sub">12K HDR</div>
+                            </div>
+                            <div class="template-card">
+                                <div class="t-preview" style="background: linear-gradient(180deg, #fef3c7 0%, #fde68a 100%);"></div>
+                                <div class="t-name">Extérieur Sunset</div>
+                                <div class="t-sub">8K HDR · sun-locked</div>
+                            </div>
+                            <div class="template-card">
+                                <div class="t-preview" style="background: repeating-conic-gradient(#e2e8f0 0% 25%, #fff 0% 50%) 50%/14px 14px;"></div>
+                                <div class="t-name">Fond transparent</div>
+                                <div class="t-sub">PNG α / matting</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3.2 Matériaux AxF -->
+                    <div class="mock-card">
+                        <h4>Bibliothèque matériaux <span class="axf-badge">AxF Lumiscaphe</span></h4>
+                        <p style="font-size: 11px; color: var(--green); margin-bottom: 8px;">✓ 12 matériaux auto-mappés depuis les noms CAO (regex) · 175 disponibles pour drag &amp; drop</p>
+                        <div class="axf-material-grid">
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #94a3b8 0%, #f1f5f9 40%, #cbd5e1 100%);"></div>
+                                <div class="axf-mat-name">Chrome Poli</div>
+                                <div class="axf-mat-meta">AxF / 14 ch</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.6), transparent), linear-gradient(135deg, #0c4a6e 0%, #075985 100%); opacity: 0.85;"></div>
+                                <div class="axf-mat-name">Verre Teinté</div>
+                                <div class="axf-mat-meta">AxF / disp.</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #1c1917 0%, #292524 100%);"></div>
+                                <div class="axf-mat-name">Caoutchouc</div>
+                                <div class="axf-mat-meta">AxF / 8 ch</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #b45309 0%, #fbbf24 50%, #fef3c7 100%);"></div>
+                                <div class="axf-mat-name">Laque Or</div>
+                                <div class="axf-mat-meta">AxF / 16 ch</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #be123c 0%, #f43f5e 100%);"></div>
+                                <div class="axf-mat-name">Cuir Bordeaux</div>
+                                <div class="axf-mat-meta">AxF / fab.</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #525252 0%, #a3a3a3 100%);"></div>
+                                <div class="axf-mat-name">Alu Brossé</div>
+                                <div class="axf-mat-meta">AxF / aniso</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #1e293b 0%, #475569 100%);"></div>
+                                <div class="axf-mat-name">Alcantara</div>
+                                <div class="axf-mat-meta">AxF / fuzz</div>
+                            </div>
+                            <div class="axf-mat">
+                                <div class="axf-mat-swatch" style="background: linear-gradient(135deg, #d97706 0%, #fbbf24 100%);"></div>
+                                <div class="axf-mat-name">Cuir Camel</div>
+                                <div class="axf-mat-meta">AxF / fab.</div>
+                            </div>
+                        </div>
+                        <p style="font-size: 10.5px; color: var(--text-muted); margin-top: 10px; line-height: 1.4;"><strong>Format AxF</strong> = Appearance eXchange Format de X-Rite. Standard industriel mesuré au spectrophotomètre (BRDF/SVBRDF). Différenciation Lumiscaphe vs KeyShot (PBR approximatif) et Threekit (pas d'AxF natif).</p>
+                    </div>
+
+                    <!-- 3.3 Sliders sémantiques PBR -->
+                    <div class="mock-card" style="border-color: var(--cyan-accent);">
+                        <h4>Ajustements rapides (sliders sémantiques)</h4>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 14px;">Curseurs en langage naturel → mappés sur les paramètres PBR (metalness, roughness, baseColor) côté serveur. <strong>Aucun éditeur nodal exposé.</strong></p>
+                        <div class="pbr-block">
+                            <div class="pbr-slider">
+                                <label>Brillance</label>
+                                <div class="pbr-track"><div class="pbr-thumb" style="left: 72%;"></div></div>
+                                <span class="pbr-value">0.72</span>
+                            </div>
+                            <div class="pbr-slider">
+                                <label>Teinte</label>
+                                <div class="pbr-track" style="background: linear-gradient(90deg, #ef4444, #f59e0b, #eab308, #10b981, #06b6d4, #8b5cf6, #ec4899);"><div class="pbr-thumb" style="left: 18%;"></div></div>
+                                <span class="pbr-value">+12°</span>
+                            </div>
+                            <div class="pbr-slider">
+                                <label>Réflexion</label>
+                                <div class="pbr-track"><div class="pbr-thumb" style="left: 55%;"></div></div>
+                                <span class="pbr-value">0.55</span>
+                            </div>
+                            <div class="pbr-slider">
+                                <label>Rugosité</label>
+                                <div class="pbr-track"><div class="pbr-thumb" style="left: 28%;"></div></div>
+                                <span class="pbr-value">0.28</span>
+                            </div>
+                            <div class="pbr-slider">
+                                <label>Métallicité</label>
+                                <div class="pbr-track"><div class="pbr-thumb" style="left: 90%;"></div></div>
+                                <span class="pbr-value">0.90</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3.4 Options du configurateur -->
+                    <div class="mock-card">
+                        <h4>Groupes d'options du configurateur</h4>
+                        <button class="mock-btn primary" style="font-size: 12px; padding: 7px 14px; margin-bottom: 12px;">+ Ajouter un groupe</button>
+
+                        <div class="option-group">
+                            <div class="option-group-header">
+                                <h5>🎨 Couleur carrosserie</h5>
+                                <span class="param-key">PAINT</span>
+                            </div>
+                            <div>
+                                <span class="option-tag red">PAINT.Rouge_Flamme</span>
+                                <span class="option-tag blue">PAINT.Bleu_Cosmos</span>
+                                <span class="option-tag black">PAINT.Noir_Etoile</span>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <div class="option-group-header">
+                                <h5>🛞 Jantes</h5>
+                                <span class="param-key">RIMS</span>
+                            </div>
+                            <div>
+                                <span class="option-tag chrome">RIMS.Chrome_17</span>
+                                <span class="option-tag black">RIMS.Acier_16</span>
+                            </div>
+                        </div>
+
+                        <div class="option-group">
+                            <div class="option-group-header">
+                                <h5>☀️ Toit</h5>
+                                <span class="param-key">ROOF</span>
+                            </div>
+                            <div>
+                                <span class="option-tag blue">ROOF.Sunroof</span>
+                                <span class="option-tag chrome">ROOF.Solid</span>
+                            </div>
+                            <p style="font-size: 11px; color: var(--orange); margin-top: 6px;">⚙ Règle partition : <code style="font-family: var(--mono); font-size: 10px;">ROOF.Sunroof → hide("Roof_solid_geom")</code></p>
+                        </div>
+
+                        <h5 style="font-size: 11px; margin-top: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px;">Chaîne de configuration active</h5>
+                        <div class="config-string-preview"><span class="key">PAINT</span><span class="sep">.</span><span class="val">Rouge_Flamme</span><span class="sep">/</span><span class="key">RIMS</span><span class="sep">.</span><span class="val">Chrome_17</span><span class="sep">/</span><span class="key">ROOF</span><span class="sep">.</span><span class="val">Sunroof</span></div>
+                    </div>
+
+                    <!-- 3.5 Caméras -->
+                    <div class="mock-card">
+                        <h4>Bookmarks caméra (WebRender)</h4>
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 60px; height: 44px; background: #f1f5f9; border-radius: 6px; border: 2px solid var(--cyan-accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; font-weight: 600;">Face<br><span style="font-family: var(--mono); font-size: 9px; color: var(--text-muted);">img</span></div>
+                            <div style="flex: 1; min-width: 60px; height: 44px; background: #f1f5f9; border-radius: 6px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted);">3/4 avant<br><span style="font-family: var(--mono); font-size: 9px;">img</span></div>
+                            <div style="flex: 1; min-width: 60px; height: 44px; background: #f1f5f9; border-radius: 6px; border: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted);">Profil<br><span style="font-family: var(--mono); font-size: 9px;">img</span></div>
+                            <div style="flex: 1; min-width: 60px; height: 44px; background: rgba(0,168,225,0.08); border-radius: 6px; border: 1px dashed var(--cyan-accent); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 10px; color: var(--cyan-accent); font-weight: 600;">Orbite 360°<br><span style="font-family: var(--mono); font-size: 9px;">vrObject · 24f</span></div>
+                            <div style="flex: 0 0 36px; height: 44px; background: white; border-radius: 6px; border: 2px dashed var(--border); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-light); cursor: pointer;">+</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-machine">
+                    <div class="split-label machine">Ce que la machine fait</div>
+
+                    <div class="machine-log">
+<span class="log-info">[STUDIO]</span> HDRi env applied : <code>studio_blanc_8K.exr</code> (16 MB)<br>
+<span class="log-ok">✓</span> IBL irradiance/specular cubemaps generated (256² + 128²)<br>
+<span class="log-info">[AXF]</span> Material drag &amp; drop on surface <code>Chrome_bumper</code><br>
+<span class="log-label">├─</span> Loading <code>Chrome_Poli.axf</code> (14 BRDF channels)<br>
+<span class="log-label">└─</span> Spectral → sRGB conversion · texture pack 4×2K KTX2<br>
+<span class="log-info">[PBR-SLIDER]</span> Brillance=0.72 → <code>roughness = 1 - 0.72 = 0.28</code><br>
+<span class="log-info">[PBR-SLIDER]</span> Teinte=+12° → HSL hue shift on baseColor sampler<br>
+<span class="log-info">[CONFIG]</span> Building configuration tree...<br>
+<span class="log-label">├─</span> Param <code>PAINT</code> → values [Rouge_Flamme, Bleu_Cosmos, Noir_Etoile]<br>
+<span class="log-label">├─</span> Param <code>RIMS</code> → values [Chrome_17, Acier_16]<br>
+<span class="log-label">└─</span> Param <code>ROOF</code> → values [Sunroof, Solid]<br>
+<span class="log-ok">✓</span> 3 × 2 × 2 = <strong>12 combinaisons</strong> · validated, no rule conflict<br>
+<span class="log-info">[PARTITION]</span> Rule <code>ROOF.Sunroof → hide(Roof_solid_geom)</code> compiled<br>
+<span class="log-info">[BOOKMARK]</span> 3 image cameras + 1 vrObject (24 frames, panLoop:true)<br>
+<span class="log-info">[CACHE]</span> Pre-render WebRender /Snapshot → 12 × 3 vues = 36 frames<br>
+<span class="log-ok">✓</span> Cache warmed · subsequent option switches &lt; 200ms
+                    </div>
+
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">💡</div>
+                        <div class="machine-step-text">
+                            <h5>HDRi pré-filtré + IBL serveur</h5>
+                            <p>Environnement chargé en mémoire P3D headless. IBL cubemaps précalculés. <strong>Le serveur ne réexpose jamais le placement de lumière manuel</strong> au client (masqué structurellement).</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon orange">🎨</div>
+                        <div class="machine-step-text">
+                            <h5>AxF natif + auto-mapping (regex)</h5>
+                            <p>Différenciation Lumiscaphe. Format BRDF mesuré 14 canaux. Auto-mapping via regex sur noms CAO (<code>Chrome_bumper → Chrome_Poli.axf</code> @ 98% confiance). Pièces &lt; 60% confiance signalées orange.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon cyan">🎚️</div>
+                        <div class="machine-step-text">
+                            <h5>Sliders sémantiques → PBR params</h5>
+                            <p>Mapping linéaire : Brillance → <code>1-roughness</code>, Teinte → HSL hue shift, Métallicité → <code>metalness</code>. <strong>Aucun graphe nodal jamais exposé</strong> (anti-pattern P3D legacy identifié dans le rapport).</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">🌳</div>
+                        <div class="machine-step-text">
+                            <h5>Chaînes <code>Param.Valeur</code> + partitions P3D</h5>
+                            <p>Génération auto de la grammaire WebRender. Validation des conflits (deux règles sur la même partition). Le résultat alimente directement <code>viewer.load({database, configuration})</code>.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon purple">⚡</div>
+                        <div class="machine-step-text">
+                            <h5>Pré-cache WebRender</h5>
+                            <p>12 combos × 3 caméras image + 1 vrObject 24-frames = 60 frames pré-calculées. <strong>Garantit &lt; 200ms de latence sur changement d'option côté client final.</strong> Stockage S3 + CDN.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             PHASE 4 — AHA! & DÉPLOIEMENT
+             ══════════════════════════════════════════════════════════ -->
+        <div class="step-panel" id="step-4">
+            <div class="step-header">
+                <div class="step-header-top">
+                    <h3>Phase 4 — Aha! &amp; Déploiement</h3>
+                    <span class="phase-meta">TTV cumulé : 12:00 → 15:00 ✓</span>
+                </div>
+                <p>Le marketing manager applique sa charte, clique "Publier", obtient son URL publique, son iframe et son QR code. Compression Draco + KTX2 obligatoire pour protéger les marges (rapport audit : Egress = 30% du coût d'abonnement si non maîtrisé).</p>
+            </div>
+            <div class="split-view">
+                <div class="split-client">
+                    <div class="split-label client">Ce que le client voit</div>
+
+                    <div class="mock-card">
+                        <h4>Identité visuelle</h4>
+                        <div class="drop-zone" style="padding: 18px;">
+                            <div style="font-size: 22px; margin-bottom: 4px;">🖼</div>
+                            <p style="font-size: 11.5px;">Déposez votre logo (SVG/PNG)</p>
+                        </div>
+                        <div class="color-row">
+                            <label>Couleur primaire</label>
+                            <div class="color-swatch" style="background: var(--blue-deep);"></div>
+                            <span class="color-hex">#002654</span>
+                            <span style="font-size: 10px; color: var(--green); margin-left: 4px;">✓ extrait du logo</span>
+                        </div>
+                        <div class="color-row">
+                            <label>Couleur accent</label>
+                            <div class="color-swatch" style="background: var(--cyan-accent);"></div>
+                            <span class="color-hex">#00A8E1</span>
+                        </div>
+                        <div class="color-row">
+                            <label>Style boutons</label>
+                            <div style="display: flex; gap: 6px;">
+                                <div style="padding: 3px 12px; border-radius: 4px; background: var(--blue-deep); color: white; font-size: 10px;">Carré</div>
+                                <div style="padding: 3px 12px; border-radius: 20px; background: var(--blue-deep); color: white; font-size: 10px; border: 2px solid var(--cyan-accent);">Pill ✓</div>
+                                <div style="padding: 3px 12px; border-radius: 8px; background: var(--blue-deep); color: white; font-size: 10px;">Arrondi</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mock-card">
+                        <h4>Textes &amp; CTA</h4>
+                        <input class="mock-input" value="Configurez votre Trafic L2H2 2026" placeholder="Titre">
+                        <input class="mock-input" value="Choisissez vos options et visualisez en temps réel." placeholder="Sous-titre">
+                        <input class="mock-input" value="Demander un devis" placeholder="CTA principal">
+                    </div>
+
+                    <div class="mock-card">
+                        <h4>Preview du configurateur final</h4>
+                        <div class="brand-preview">
+                            <div class="brand-preview-header">
+                                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                                <span style="color: rgba(255,255,255,0.5); font-size: 11px; margin-left: 8px; font-family: var(--mono);">lumiconfig.io/c/trafic-2026</span>
+                            </div>
+                            <div class="brand-preview-body">
+                                <p style="font-size: 15px; font-weight: 700; color: var(--blue-deep); margin-bottom: 2px;">Configurez votre Trafic L2H2 2026</p>
+                                <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Choisissez vos options et visualisez en temps réel.</p>
+                                <div class="viewer-placeholder" style="padding: 16px;"><div class="viewer-mock-svg">[ @lumiscaphe/viewer · mode=image · 3D temps réel ]</div></div>
+                                <div class="brand-config-btns">
+                                    <div class="brand-config-btn" style="background: #dc2626;"></div>
+                                    <div class="brand-config-btn" style="background: #1e40af;"></div>
+                                    <div class="brand-config-btn" style="background: #1e293b;"></div>
+                                </div>
+                                <button class="mock-btn primary" style="margin-top: 12px; border-radius: 20px;">Demander un devis</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mock-card" style="text-align: center; background: var(--blue-deep); border-color: var(--cyan-accent);">
+                        <h4 style="color: white;">Prêt à publier ?</h4>
+                        <p style="font-size: 12px; color: #cbd5e1; margin-bottom: 12px;">Mise en ligne instantanée. URL personnalisée + iframe + QR.</p>
+                        <button class="mock-btn green" style="font-size: 14px; padding: 12px 32px;">🚀 Publier maintenant</button>
+                    </div>
+
+                    <div class="mock-card" style="border-color: var(--green); background: rgba(16, 185, 129, 0.04);">
+                        <h4 style="color: var(--green);">✓ Configurateur en ligne en 14 m 32 s 🎉</h4>
+                        <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;"><strong>Aha! Moment</strong> validé. Promesse TTV 15 min tenue. Email de confirmation envoyé.</p>
+
+                        <div class="publish-output">
+                            <div class="publish-output-icon" style="background: #dbeafe;">🔗</div>
+                            <div class="publish-output-text">
+                                <h5>Lien public</h5>
+                                <span class="publish-output-code">lumiconfig.io/c/trafic-2026</span>
+                            </div>
+                        </div>
+
+                        <div class="publish-output">
+                            <div class="publish-output-icon" style="background: #ede9fe;">📋</div>
+                            <div class="publish-output-text">
+                                <h5>Code embed</h5>
+                                <span class="publish-output-code">&lt;iframe src="lumiconfig.io/embed/c_3a8f"&gt;</span>
+                            </div>
+                        </div>
+
+                        <div class="publish-output">
+                            <div class="publish-output-icon" style="background: #fce7f3;">📱</div>
+                            <div class="publish-output-text">
+                                <h5>QR Code</h5>
+                                <p>PNG 1024×1024 · SVG vectoriel · salon/brochure-ready</p>
+                            </div>
+                        </div>
+
+                        <div class="publish-output">
+                            <div class="publish-output-icon" style="background: #f1f5f9;">📲</div>
+                            <div class="publish-output-text">
+                                <h5>Mode iPad démonstration</h5>
+                                <p>App standalone packagée pour démos sur stand (Caravan Salon Düsseldorf, Luxe Pack Monaco). Offline-capable, service worker.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-machine">
+                    <div class="split-label machine">Ce que la machine fait</div>
+
+                    <div class="machine-log">
+<span class="log-info">[BRAND]</span> Logo SVG parsed · primary color #002654, accent #00A8E1 extracted (Color-Thief)<br>
+<span class="log-info">[THEME]</span> CSS vars compiled → <code>--primary, --accent, --radius-pill</code><br>
+<span class="log-info">[BUILD]</span> Bundling configurator app...<br>
+<span class="log-label">├─</span> JS bundle (Vite + @lumiscaphe/viewer) → 142 KB gzip<br>
+<span class="log-label">├─</span> Geometry export → <code>glTF 2.0 + KHR_draco_mesh_compression</code><br>
+<span class="log-label">│  └─</span> 680K tri compressed: 18 MB → <span class="log-ok">2.4 MB (-87%)</span><br>
+<span class="log-label">├─</span> Textures export → <code>KTX2 / Basis Universal</code><br>
+<span class="log-label">│  ├─</span> Normal/AO maps: UASTC (lossless-ish) · 8.2 MB → <span class="log-ok">2.1 MB (-74%)</span><br>
+<span class="log-label">│  └─</span> Diffuse maps: ETC1S (lossy) · 12 MB → <span class="log-ok">1.4 MB (-88%)</span><br>
+<span class="log-label">└─</span> Service worker → offline cache + iPad standalone mode<br>
+<span class="log-ok">✓</span> Build final: <strong>5.8 MB</strong> tout inclus (objectif &lt; 6 MB respecté)<br>
+<span class="log-info">[DEPLOY]</span> CloudFront multi-region (12 edges) · SSL auto · HTTP/3<br>
+<span class="log-info">[WR]</span> POST /Database/publish → <code>databaseId: db_a8f12c3d</code> public<br>
+<span class="log-info">[DNS]</span> Route <code>lumiconfig.io/c/trafic-2026</code> · TTL CDN 1y<br>
+<span class="log-info">[QR]</span> 1024×1024 PNG + SVG vectoriel<br>
+<span class="log-info">[ANALYTICS]</span> Tracking initialisé · webhook CRM prêt<br>
+<span class="log-ok">✓</span> Time-to-Value: <span class="log-ok">14:32</span> · promesse 15 min validée
+                    </div>
+
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">📦</div>
+                        <div class="machine-step-text">
+                            <h5>Compression Draco + KTX2 (impératif marges)</h5>
+                            <p>Le rapport audit identifie l'<strong>Egress AWS comme centre de coût critique</strong> (180€/mo si 2 To non maîtrisé). Compression Draco sur la géométrie + KTX2/Basis sur les textures = -85% de poids = marges protégées. <code>&lt; 6 MB total visé.</code></p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon cyan">🌐</div>
+                        <div class="machine-step-text">
+                            <h5>Déploiement CloudFront multi-region</h5>
+                            <p>12 edge nodes, SSL auto, HTTP/3. Service worker activé pour mode iPad démo (offline-capable, indispensable Caravan Salon).</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon purple">📐</div>
+                        <div class="machine-step-text">
+                            <h5>Génération URL personnalisée + WebRender public</h5>
+                            <p>L'iframe charge le viewer <code>@lumiscaphe/viewer</code> pointant sur le <code>databaseId</code> publié. Les paramètres de configuration (chaînes <code>Param.Valeur</code>) sont passés en query string.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             DASHBOARD (post-onboarding)
+             ══════════════════════════════════════════════════════════ -->
+        <div class="step-panel" id="step-5">
+            <div class="step-header">
+                <div class="step-header-top">
+                    <h3>Dashboard — Performance &amp; consommation</h3>
+                    <span class="phase-meta">post-onboarding · accessible 24/7</span>
+                </div>
+                <p>Le client suit la performance commerciale + sa consommation usage-based (vues, Egress). La métrique signature : <strong>€ d'upsell récupérés</strong> — celle qui justifie le renouvellement face au CFO.</p>
+            </div>
+            <div class="split-view">
+                <div class="split-client">
+                    <div class="split-label client">Ce que le client voit</div>
+
+                    <div class="stat-grid">
+                        <div class="stat-card">
+                            <div class="stat-val">1 247</div>
+                            <div class="stat-label">Visiteurs (30j)</div>
+                            <div class="stat-delta">+18% vs mois précédent</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-val">68%</div>
+                            <div class="stat-label">Taux d'interaction</div>
+                            <div class="stat-delta">+4 pts</div>
+                        </div>
+                        <div class="stat-card highlight">
+                            <div class="stat-val">+22 500 €</div>
+                            <div class="stat-label">Upsell récupéré (30j)</div>
+                            <div class="stat-delta">15 configs × 1 500 € · vs baseline</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-val">47</div>
+                            <div class="stat-label">Demandes de devis</div>
+                            <div class="stat-delta">CRM sync ✓</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-val">2m 34s</div>
+                            <div class="stat-label">Temps moyen passé</div>
+                            <div class="stat-delta">+38 s</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-val">3.2×</div>
+                            <div class="stat-label">ROI mensuel</div>
+                            <div class="stat-delta">22 500 € / 585 €</div>
+                        </div>
+                    </div>
+
+                    <div class="mock-card">
+                        <h4>Consommation usage-based (Plan Pro)</h4>
+                        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">Tarification hybride recommandée par le rapport d'audit : platform fee + métrique de valeur (vues).</p>
+
+                        <div class="egress-meter">
+                            <div class="egress-meter-header">
+                                <span>Vues consommées</span>
+                                <span class="egress-val">8 240 / 20 000</span>
+                            </div>
+                            <div class="egress-bar"><div class="egress-bar-fill" style="width: 41%;"></div></div>
+                            <p class="egress-note">41% du quota mensuel. Au-delà : 15 € par tranche de 1 000 vues supplémentaires.</p>
+                        </div>
+
+                        <div class="egress-meter" style="margin-top: 10px;">
+                            <div class="egress-meter-header">
+                                <span>Bande passante CDN (Egress)</span>
+                                <span class="egress-val">68 Go / 200 Go</span>
+                            </div>
+                            <div class="egress-bar"><div class="egress-bar-fill" style="width: 34%;"></div></div>
+                            <p class="egress-note">34% — compression Draco + KTX2 active. Sans elle : ~470 Go (estimation, hors quota).</p>
+                        </div>
+                    </div>
+
+                    <div class="mock-card">
+                        <h4>Configurations les plus populaires</h4>
+                        <div style="margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span style="font-weight: 600; font-family: var(--mono); font-size: 11px;">PAINT.Rouge / RIMS.Chrome_17 / ROOF.Sunroof</span>
+                                <span style="color: var(--text-muted);">38%</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill blue" style="width: 38%;"></div></div>
+                        </div>
+                        <div style="margin-bottom: 8px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span style="font-weight: 600; font-family: var(--mono); font-size: 11px;">PAINT.Noir / RIMS.Chrome_17 / ROOF.Solid</span>
+                                <span style="color: var(--text-muted);">29%</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill blue" style="width: 29%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                                <span style="font-weight: 600; font-family: var(--mono); font-size: 11px;">PAINT.Bleu / RIMS.Acier_16 / ROOF.Solid</span>
+                                <span style="color: var(--text-muted);">18%</span>
+                            </div>
+                            <div class="progress-bar"><div class="progress-bar-fill blue" style="width: 18%;"></div></div>
+                        </div>
+                        <p style="font-size: 11px; color: var(--purple); margin-top: 10px; font-weight: 600;">🧠 Insight auto : la combinaison <code>Rouge/Chrome/Sunroof</code> est demandée 38% du temps → recommandation stock concession.</p>
+                    </div>
+
+                    <div class="mock-card">
+                        <h4>Leads commerciaux récents</h4>
+                        <div style="font-size: 12px; line-height: 2.2;">
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 2px 0;">
+                                <span><strong>M. Dupont</strong> — Garage Auto Plus · <span style="color: var(--text-muted); font-family: var(--mono); font-size: 10px;">PAINT.Rouge/RIMS.Chrome_17</span></span>
+                                <span style="color: var(--text-muted);">il y a 2h</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding: 2px 0;">
+                                <span><strong>Mme. Chen</strong> — FleetCorp Intl. · <span style="color: var(--text-muted); font-family: var(--mono); font-size: 10px;">PAINT.Noir/ROOF.Sunroof</span></span>
+                                <span style="color: var(--text-muted);">il y a 5h</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 2px 0;">
+                                <span><strong>S. Martinez</strong> — Transports Verts · <span style="color: var(--text-muted); font-family: var(--mono); font-size: 10px;">PAINT.Bleu/RIMS.Acier_16</span></span>
+                                <span style="color: var(--text-muted);">hier</span>
+                            </div>
+                        </div>
+                        <div class="mock-btn-row">
+                            <button class="mock-btn secondary" style="font-size: 11px;">Exporter CSV</button>
+                            <button class="mock-btn secondary" style="font-size: 11px;">Webhook → HubSpot</button>
+                            <button class="mock-btn secondary" style="font-size: 11px;">Webhook → Salesforce</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="split-machine">
+                    <div class="split-label machine">Ce que la machine fait</div>
+
+                    <div class="machine-log">
+<span class="log-info">[ANALYTICS]</span> Event collection : pageview, drag, optionChange, devisSubmit<br>
+<span class="log-ok">✓</span> 1 247 unique visitors (30d) · 849 config interactions · 47 leads<br>
+<span class="log-info">[METRICS]</span> Computing upsell €...<br>
+<span class="log-label">├─</span> 15 configs avec ROOF.Sunroof (option +1 500 €)<br>
+<span class="log-label">├─</span> 15 × 1 500 € = <strong>22 500 € upsell potentiel</strong><br>
+<span class="log-label">└─</span> ROI = 22 500 / 585 (abonnement) = <strong>3.2× monthly</strong><br>
+<span class="log-info">[BILLING]</span> Usage tier check...<br>
+<span class="log-label">├─</span> Plan Pro · base 585 €/mo · 20 000 vues incluses<br>
+<span class="log-label">├─</span> Consommé : 8 240 vues (41%)<br>
+<span class="log-label">└─</span> Egress CDN : 68 Go / 200 Go (34%) — compression active<br>
+<span class="log-info">[EGRESS]</span> Sans Draco+KTX2 : projection <span class="log-warn">~470 Go</span> (×6.9)<br>
+<span class="log-info">[WEBHOOK]</span> Lead push to HubSpot/Pipedrive (real-time)<br>
+<span class="log-info">[CRM]</span> Lead 1247 enriched · ARR potential ~24K€/y<br>
+<span class="log-info">[INSIGHT]</span> Top config Rouge/Chrome/Sunroof @ 38% → reco stock concession<br>
+<span class="log-ok">✓</span> Daily digest scheduled to user email
+                    </div>
+
+                    <div class="machine-step">
+                        <div class="machine-step-icon orange">💰</div>
+                        <div class="machine-step-text">
+                            <h5>Métrique €-upsell (rapport stratégique)</h5>
+                            <p>Carte signature absente de l'ancienne maquette. Calcul : configs comportant une option premium × prix moyen. <strong>C'est la métrique qui justifie le renouvellement au CFO.</strong></p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon cyan">📊</div>
+                        <div class="machine-step-text">
+                            <h5>Pricing usage-based hybride</h5>
+                            <p>Platform fee 585 €/mo + 20 000 vues incluses + dépassement 15 €/1 000 vues. <strong>Net Revenue Retention &gt; 110%</strong> selon rapport audit (les clients qui réussissent paient plus).</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon green">📦</div>
+                        <div class="machine-step-text">
+                            <h5>Egress monitoring temps réel</h5>
+                            <p>Bande passante CDN trackée et projetée. Alerte si dépassement seuil. Le coût AWS Egress (~0,09 $/Go) est <strong>le centre de coût n°1</strong> du SaaS — surveillé en permanence.</p>
+                        </div>
+                    </div>
+                    <div class="machine-step">
+                        <div class="machine-step-icon purple">🔗</div>
+                        <div class="machine-step-text">
+                            <h5>Webhooks CRM (HubSpot/Salesforce/Pipedrive)</h5>
+                            <p>Lead synchronisation temps réel avec config string + scoring. Évite la friction "export CSV manuel" qui tue les workflows commerciaux B2B.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STACK TECHNIQUE DE RÉFÉRENCE
+         ══════════════════════════════════════════════════════════ -->
+    <div class="tech-stack-box">
+        <h3>Stack technique de référence (à valider avec l'équipe)</h3>
+        <p>Hypothèses d'architecture cohérentes avec le rapport d'audit et les chiffres unit economics. À confronter à l'existant Lumiscaphe.</p>
+        <div class="tech-stack-grid">
+            <div class="tech-stack-col">
+                <h5>Pipeline 3D</h5>
+                <ul>
+                    <li><strong>Patchwork 3D Headless</strong> v6.4+ <span class="tag risk">à confirmer</span></li>
+                    <li><strong>WebRender API</strong> v2 <span class="tag ok">existant</span></li>
+                    <li><strong>@lumiscaphe/viewer</strong> v4 <span class="tag ok">existant</span></li>
+                    <li>InstaLOD SDK <span class="tag risk">fallback</span></li>
+                    <li>CAD Exchanger SDK <span class="tag risk">fallback</span></li>
+                    <li>Draco compression (glTF)</li>
+                    <li>KTX2 / Basis Universal (textures)</li>
+                </ul>
+            </div>
+            <div class="tech-stack-col">
+                <h5>Infra cloud</h5>
+                <ul>
+                    <li><strong>AWS Fargate</strong> ARM Graviton2 (pipeline)</li>
+                    <li>AWS Lambda (events légers)</li>
+                    <li>S3 multipart (uploads &gt; 100 MB)</li>
+                    <li>CloudFront multi-region (CDN)</li>
+                    <li>RDS Postgres (multi-tenant)</li>
+                    <li>Redis (cache WebRender)</li>
+                    <li>Cognito ou Auth0 (JWT/SSO)</li>
+                </ul>
+            </div>
+            <div class="tech-stack-col">
+                <h5>Stack applicatif</h5>
+                <ul>
+                    <li><strong>Frontend</strong> Vite + Vanilla/React</li>
+                    <li><strong>Backend</strong> Node.js / Python FastAPI</li>
+                    <li>Stripe (billing usage-based)</li>
+                    <li>HubSpot/Salesforce webhooks</li>
+                    <li>Clearbit/Apollo (lead enrichment)</li>
+                    <li>PostHog / Mixpanel (analytics)</li>
+                    <li>Sentry (error tracking)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         QUESTIONS OUVERTES POUR LE DEV / UTILISATEUR P3D
+         ══════════════════════════════════════════════════════════ -->
+    <div class="open-questions">
+        <h3>Questions ouvertes — à trancher avant développement</h3>
+        <p>Les 5 décisions critiques identifiées par le rapport d'audit. Sans réponse à ces questions, le modèle 585 €/mois s'effondre.</p>
+        <div class="question-list">
+            <div class="question-card">
+                <div class="q-num">Q1 · Faisabilité technique</div>
+                <div class="q-text">Patchwork 3D existe-t-il en mode CLI headless containerisable (Linux ARM) ?</div>
+                <div class="q-impact"><strong>Impact :</strong> si NON, le pipeline cloud auto échoue → soit dev d'un mode headless (gros chantier), soit pivot sur SDK tiers (InstaLOD ~165$/mois/poste, CAD Exchanger ~2 690$ + volume). <strong>Bloque toute la promesse 15 min.</strong></div>
+            </div>
+            <div class="question-card">
+                <div class="q-num">Q2 · UV unwrap automatisé</div>
+                <div class="q-text">Le moteur P3D peut-il faire de l'UV unwrap tri-planaire 100% auto sur des assemblages CAO bruts ?</div>
+                <div class="q-impact"><strong>Impact :</strong> l'étape la plus chronophage / frustrante de la 3D. Si pas auto → utilisateur doit intervenir → promesse TTV cassée. <strong>Validation pratique sur un cas réel VDL exigée avant Gate 2.</strong></div>
+            </div>
+            <div class="question-card">
+                <div class="q-num">Q3 · AxF accessible API</div>
+                <div class="q-text">La bibliothèque AxF Lumiscaphe est-elle exposable via API + filtrable par tag sectoriel ?</div>
+                <div class="q-impact"><strong>Impact :</strong> l'AxF est <strong>le différenciateur</strong> face à KeyShot/Threekit. Si la lib n'est pas filtrable → fatigue décisionnelle → adoption marketing manager bloquée. Catalogue à structurer côté backend.</div>
+            </div>
+            <div class="question-card">
+                <div class="q-num">Q4 · Pricing usage-based</div>
+                <div class="q-text">L'infra peut-elle mesurer fiablement les "vues" (1 chargement viewer = 1 vue ?) pour facturer au-delà du quota ?</div>
+                <div class="q-impact"><strong>Impact :</strong> sans cette mesure, l'Egress AWS peut bouffer 30% de la marge sur un client trafiqué (rapport audit, 180€/mo). Nécessite tracking + alerte + UI conso côté client (cf. dashboard).</div>
+            </div>
+            <div class="question-card">
+                <div class="q-num">Q5 · Compression obligatoire</div>
+                <div class="q-text">Le pipeline export final intègre-t-il Draco (géométrie) + KTX2 (textures) systématiquement ?</div>
+                <div class="q-impact"><strong>Impact :</strong> sans cela, poids des configurateurs ≥ 20 MB. Egress ×7 → marges détruites. <strong>Compression non-négociable</strong> à intégrer dès le build pipeline (étape 4).</div>
+            </div>
+            <div class="question-card">
+                <div class="q-num">Q6 · Caméras vrObject auto-générées</div>
+                <div class="q-text">Sur ingestion, génère-t-on automatiquement une caméra vrObject (turntable 24-36 frames) en plus des bookmarks fixes ?</div>
+                <div class="q-impact"><strong>Impact :</strong> la vue 360° interactive est attendue par défaut sur configurateurs B2C/B2B 2026. Si pas généré auto → utilisateur doit créer manuellement → friction. Coût pré-render = 36 snapshots WebRender supplémentaires.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <footer class="mockup-footer">
+        <p>LumiConfig — Maquette fonctionnelle &amp; spec faisabilité · Prototype interne Lumiscaphe · Juin 2026</p>
+        <p style="margin-top: 4px;">Conçu par Hugo Gendry · Aligné sur <em>Stratégie Go-To-Market LumiConfig</em>, <em>Audit Pure Player SaaS</em>, <em>Projet Menus P3D</em></p>
+        <p style="margin-top: 4px;">Propulsé par <a href="#">Patchwork 3D Headless</a> · <a href="#">WebRender API v2</a> · <a href="#">@lumiscaphe/viewer</a></p>
+    </footer>
+
+    <script>
+        function showStep(n) {
+            document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.step-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('step-' + n).classList.add('active');
+            document.querySelectorAll('.step-tab')[n - 1].classList.add('active');
+
+            // Update TTV chrono with cumulative time
+            const ttv = ['Promesse TTV : 15 min', '00:00 → 02:00', '02:00 → 05:00', '05:00 → 12:00', '12:00 → 15:00 ✓ Aha!', 'Post-onboarding'];
+            document.getElementById('ttv-chrono').textContent = ttv[n] || ttv[0];
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
